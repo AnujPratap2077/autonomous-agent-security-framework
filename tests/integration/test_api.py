@@ -1,4 +1,3 @@
-
 import pytest
 from fastapi.testclient import TestClient
 
@@ -137,3 +136,127 @@ def test_empty_batch_rejected():
     response = client.post("/events/batch", json=[])
 
     assert response.status_code == 400
+
+
+def test_behavioural_analysis_uses_historical_sessions():
+    agent_id = "behaviour-agent"
+
+    events = []
+
+    # Five historical sessions with one action each.
+    for i in range(5):
+        events.append(
+            create_event(
+                agent_id=agent_id,
+                session_id=f"history-{i}",
+                action="file_read"
+            )
+        )
+
+    # Current session has five actions.
+    for _ in range(5):
+        events.append(
+            create_event(
+                agent_id=agent_id,
+                session_id="current-session",
+                action="file_read"
+            )
+        )
+
+    client.post("/events/batch", json=events)
+
+    response = client.get(
+        "/analyze",
+        params={
+            "agent_id": agent_id,
+            "session_id": "current-session"
+        }
+    )
+
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["baseline_analysis"]["status"] == "available"
+    assert data["baseline_analysis"]["sessions_used"] == 5
+    assert len(data["behavioural_anomalies"]) >= 1
+
+    anomaly_types = [
+        anomaly["type"]
+        for anomaly in data["behavioural_anomalies"]
+    ]
+
+    assert "behavioural_deviation" in anomaly_types
+
+
+def test_rule_detection_works_without_historical_baseline():
+    agent_id = "new-agent"
+
+    events = [
+        create_event(
+            agent_id=agent_id,
+            session_id="new-session",
+            action="api_request"
+        )
+        for _ in range(3)
+    ]
+
+    client.post("/events/batch", json=events)
+
+    response = client.get(
+        "/analyze",
+        params={
+            "agent_id": agent_id,
+            "session_id": "new-session"
+        }
+    )
+
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["baseline_analysis"]["status"] == "unavailable"
+    assert data["behavioural_anomalies"] == []
+
+    anomaly_types = [
+        anomaly["type"]
+        for anomaly in data["rule_based_anomalies"]
+    ]
+
+    assert "excessive_requests" in anomaly_types
+    assert data["risk_assessment"]["risk_score"] == 30
+
+
+def test_other_agents_history_is_not_used():
+    events = []
+
+    # Five sessions belonging to another agent.
+    for i in range(5):
+        events.append(
+            create_event(
+                agent_id="different-agent",
+                session_id=f"history-{i}"
+            )
+        )
+
+    # Current agent has only one session.
+    events.append(
+        create_event(
+            agent_id="target-agent",
+            session_id="current-session"
+        )
+    )
+
+    client.post("/events/batch", json=events)
+
+    response = client.get(
+        "/analyze",
+        params={
+            "agent_id": "target-agent",
+            "session_id": "current-session"
+        }
+    )
+
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["baseline_analysis"]["status"] == "unavailable"
+    assert data["baseline_analysis"]["sessions_used"] == 0
