@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Frontend dependencies
+frontend/node_modules/
+
+# Local monitoring output
+monitor_output.txt

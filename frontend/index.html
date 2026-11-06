@@ -1,0 +1,527 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101827">
+
+    <title>AGENT//SENTINEL — Security Operations Center</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-mark">
+                    <span>A</span>
+                    <i></i>
+                </div>
+
+                <div class="brand-copy">
+                    <h2>AGENT<span>//</span>SENTINEL</h2>
+                    <p>AUTONOMOUS SECURITY</p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <p class="nav-label">PLATFORM</p>
+
+                <nav class="navigation">
+                    <a href="#overview" class="nav-link active">
+                        <span class="nav-icon">◈</span>
+                        <span>Overview</span>
+                        <span class="nav-indicator"></span>
+                    </a>
+
+                    <a href="#monitoring" class="nav-link">
+                        <span class="nav-icon">⌁</span>
+                        <span>Live Monitoring</span>
+                    </a>
+
+                    <a href="#intelligence" class="nav-link">
+                        <span class="nav-icon">⌬</span>
+                        <span>Anomaly Intelligence</span>
+                    </a>
+
+                    <a href="#agents" class="nav-link">
+                        <span class="nav-icon">◎</span>
+                        <span>Agent Profiles</span>
+                    </a>
+
+                    <a href="#risk" class="nav-link">
+                        <span class="nav-icon">◉</span>
+                        <span>Risk Analysis</span>
+                    </a>
+
+                    <a href="#events" class="nav-link">
+                        <span class="nav-icon">≡</span>
+                        <span>Event Explorer</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-system">
+                <p class="nav-label">SYSTEM STATUS</p>
+
+                <div class="sidebar-status-card">
+                    <div class="status-heading">
+                        <span class="status-dot"></span>
+                        <span>MONITORING SERVICE</span>
+                    </div>
+                    <p>Security engine interface</p>
+                    <div class="system-version">
+                        <span>BUILD</span>
+                        <strong>0.4.0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-footer-line"></div>
+                <div class="sidebar-footer-content">
+                    <div class="user-avatar">AS</div>
+                    <div>
+                        <strong>Security Console</strong>
+                        <p>LOCAL ENVIRONMENT</p>
+                    </div>
+                    <span class="sidebar-menu-dots">···</span>
+                </div>
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+
+                <div class="topbar-heading">
+                    <div class="breadcrumb">
+                        <span>WORKSPACE</span>
+                        <span class="breadcrumb-divider">/</span>
+                        <span class="breadcrumb-current">OVERVIEW</span>
+                    </div>
+                    <h1>Security Overview</h1>
+                    <p class="topbar-subtitle">
+                        Autonomous agent behaviour and threat intelligence
+                    </p>
+                </div>
+
+                <div class="topbar-right">
+
+                    <div class="system-status" id="api-status">
+                        <span class="status-dot"></span>
+                        <span>CONNECTING TO API</span>
+                    </div>
+
+                    <div class="topbar-divider"></div>
+
+                    <div class="topbar-time">
+                        <span class="topbar-time-label">ENVIRONMENT</span>
+                        <strong>LOCAL / DEV</strong>
+                    </div>
+
+                    <div class="user-avatar topbar-avatar">AS</div>
+
+                </div>
+
+            </header>
+
+
+            <!-- PAGE CONTENT -->
+            <section class="content" id="overview">
+
+                <!-- INTRO -->
+                <section class="welcome-section">
+
+                    <div class="welcome-copy">
+                        <div class="welcome-kicker">
+                            <span class="kicker-line"></span>
+                            SECURITY OPERATIONS CENTER
+                        </div>
+
+                        <h2>
+                            Behavioural Intelligence
+                            <span>Center.</span>
+                        </h2>
+
+                        <p class="welcome-description">
+                            Observe autonomous agent activity, identify suspicious
+                            behavioural patterns and assess emerging security risks.
+                        </p>
+                    </div>
+
+                    <div class="welcome-visual">
+                        <div class="welcome-orbit orbit-one"></div>
+                        <div class="welcome-orbit orbit-two"></div>
+                        <div class="welcome-orbit orbit-three"></div>
+                        <div class="welcome-core">
+                            <span>AS</span>
+                        </div>
+                        <span class="orbit-node node-one"></span>
+                        <span class="orbit-node node-two"></span>
+                        <span class="orbit-node node-three"></span>
+                    </div>
+
+                </section>
+
+
+                <!-- METRICS -->
+                <section class="metrics-grid">
+
+                    <article class="metric-card metric-primary">
+                        <div class="metric-top">
+                            <span class="metric-label">TOTAL EVENTS</span>
+                            <span class="metric-icon cyan-icon">⌁</span>
+                        </div>
+                        <div class="metric-value-row">
+                            <h3 id="total-events">--</h3>
+                            <span class="metric-unit">EVENTS</span>
+                        </div>
+                        <p class="metric-description">Recorded agent activities</p>
+                        <div class="metric-accent-line"></div>
+                    </article>
+
+                    <article class="metric-card">
+                        <div class="metric-top">
+                            <span class="metric-label">ACTIVE AGENTS</span>
+                            <span class="metric-icon violet-icon">◎</span>
+                        </div>
+                        <div class="metric-value-row">
+                            <h3 id="active-agents">--</h3>
+                            <span class="metric-unit">AGENTS</span>
+                        </div>
+                        <p class="metric-description">Unique monitored agents</p>
+                        <div class="metric-accent-line violet-line"></div>
+                    </article>
+
+                    <article class="metric-card">
+                        <div class="metric-top">
+                            <span class="metric-label">ANOMALIES DETECTED</span>
+                            <span class="metric-icon orange-icon">⌬</span>
+                        </div>
+                        <div class="metric-value-row">
+                            <h3 id="total-anomalies">--</h3>
+                            <span class="metric-unit">DETECTIONS</span>
+                        </div>
+                        <p class="metric-description">Suspicious behaviour patterns</p>
+                        <div class="metric-accent-line orange-line"></div>
+                    </article>
+
+                    <article class="metric-card">
+                        <div class="metric-top">
+                            <span class="metric-label">CRITICAL RISKS</span>
+                            <span class="metric-icon red-icon">◉</span>
+                        </div>
+                        <div class="metric-value-row">
+                            <h3 id="critical-risks">--</h3>
+                            <span class="metric-unit">ALERTS</span>
+                        </div>
+                        <p class="metric-description">Critical risk assessments</p>
+                        <div class="metric-accent-line red-line"></div>
+                    </article>
+
+                </section>
+
+
+                <!-- ACTIVITY AND NETWORK -->
+                <section class="dashboard-grid">
+
+                    <article class="panel activity-panel" id="monitoring">
+
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">TELEMETRY / 01</p>
+                                <h3>Agent Activity</h3>
+                                <p class="panel-subtitle">
+                                    Incoming events from monitored agents
+                                </p>
+                            </div>
+
+                            <span class="panel-tag">
+                                <span class="tag-dot"></span>
+                                LIVE STREAM
+                            </span>
+                        </div>
+
+                        <div class="activity-summary">
+                            <div>
+                                <span class="activity-summary-label">TOTAL RECORDED</span>
+                                <strong id="activity-total">--</strong>
+                            </div>
+                            <div>
+                                <span class="activity-summary-label">SUCCESSFUL</span>
+                                <strong id="activity-success">--</strong>
+                            </div>
+                            <div>
+                                <span class="activity-summary-label">FAILED / BLOCKED</span>
+                                <strong id="activity-failed">--</strong>
+                            </div>
+                        </div>
+
+                        <div class="chart-placeholder" id="activity-chart">
+                            <div class="chart-grid-lines">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+                            <div class="chart-empty">
+                                <div class="chart-empty-icon">⌁</div>
+                                <p>Awaiting telemetry data</p>
+                                <small>Activity visualisation will populate as events arrive</small>
+                            </div>
+                        </div>
+
+                        <div class="chart-footer">
+                            <span><i class="legend-dot cyan-legend"></i> Agent events</span>
+                            <span>DATA SOURCE: MONITORING API</span>
+                        </div>
+
+                    </article>
+
+
+                    <article class="panel network-panel" id="agents">
+
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">SYSTEM TOPOLOGY / 02</p>
+                                <h3>Network Intelligence</h3>
+                                <p class="panel-subtitle">
+                                    Interactive agent network visualisation
+                                </p>
+                            </div>
+
+                            <span class="panel-tag">3D INTERACTIVE</span>
+                        </div>
+
+                        <div class="network-visual-container">
+                            <div class="network-corner-label top-left">NODE / 001</div>
+                            <div class="network-corner-label top-right">SIGNAL MAP</div>
+
+                            <div id="figure"></div>
+
+                            <div class="network-corner-label bottom-left">
+                                POINTER RESPONSIVE
+                            </div>
+                        </div>
+
+                        <div class="network-footer">
+                            <span><i class="legend-dot cyan-legend"></i> Active interface</span>
+                            <span class="network-footer-status">
+                                <span class="status-dot"></span>
+                                VISUAL ENGINE
+                            </span>
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- INTELLIGENCE AND RISK -->
+                <section class="dashboard-grid lower-grid">
+
+                    <article class="panel intelligence-panel" id="intelligence">
+
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">DETECTION ENGINE / 03</p>
+                                <h3>Anomaly Intelligence</h3>
+                                <p class="panel-subtitle">
+                                    Behavioural deviations and rule-based detections
+                                </p>
+                            </div>
+
+                            <span class="panel-tag">ANALYSIS</span>
+                        </div>
+
+                        <div class="anomaly-content" id="anomaly-container">
+                            <div class="empty-state">
+                                <div class="empty-icon">⌬</div>
+                                <p>No analysis loaded</p>
+                                <small>
+                                    Anomaly findings will appear when agent sessions
+                                    are analysed.
+                                </small>
+                            </div>
+                        </div>
+
+                    </article>
+
+
+                    <article class="panel risk-panel" id="risk">
+
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">THREAT ASSESSMENT / 04</p>
+                                <h3>Risk Distribution</h3>
+                                <p class="panel-subtitle">
+                                    Analysed agent sessions by risk level
+                                </p>
+                            </div>
+
+                            <span class="panel-tag">RISK ENGINE</span>
+                        </div>
+
+                        <div class="risk-levels">
+
+                            <div class="risk-row">
+                                <div class="risk-row-label">
+                                    <span class="risk-dot low"></span>
+                                    <span>Low</span>
+                                </div>
+                                <strong id="risk-low">--</strong>
+                                <div class="risk-track">
+                                    <span class="risk-fill low-fill" id="risk-low-bar"></span>
+                                </div>
+                            </div>
+
+                            <div class="risk-row">
+                                <div class="risk-row-label">
+                                    <span class="risk-dot medium"></span>
+                                    <span>Medium</span>
+                                </div>
+                                <strong id="risk-medium">--</strong>
+                                <div class="risk-track">
+                                    <span class="risk-fill medium-fill" id="risk-medium-bar"></span>
+                                </div>
+                            </div>
+
+                            <div class="risk-row">
+                                <div class="risk-row-label">
+                                    <span class="risk-dot high"></span>
+                                    <span>High</span>
+                                </div>
+                                <strong id="risk-high">--</strong>
+                                <div class="risk-track">
+                                    <span class="risk-fill high-fill" id="risk-high-bar"></span>
+                                </div>
+                            </div>
+
+                            <div class="risk-row">
+                                <div class="risk-row-label">
+                                    <span class="risk-dot critical"></span>
+                                    <span>Critical</span>
+                                </div>
+                                <strong id="risk-critical">--</strong>
+                                <div class="risk-track">
+                                    <span class="risk-fill critical-fill" id="risk-critical-bar"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="risk-note">
+                            <span class="risk-note-icon">ⓘ</span>
+                            <span>Risk levels are calculated by the framework's assessment engine.</span>
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- EVENT EXPLORER -->
+                <section class="panel events-panel" id="events">
+
+                    <div class="panel-header">
+                        <div>
+                            <p class="eyebrow">TELEMETRY LOG / 05</p>
+                            <h3>Recent Agent Events</h3>
+                            <p class="panel-subtitle">
+                                Latest recorded actions across monitored sessions
+                            </p>
+                        </div>
+
+                        <span class="panel-tag">EVENT EXPLORER</span>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>AGENT ID</th>
+                                    <th>ACTION</th>
+                                    <th>TOOL</th>
+                                    <th>STATUS</th>
+                                    <th>TIMESTAMP</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="events-table-body">
+                                <tr>
+                                    <td colspan="5" class="table-empty">
+                                        Waiting for agent events...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="events-footer">
+                        <span>LIVE DATA FROM EVENT MONITOR</span>
+                        <span>REFRESH INTERVAL: 3 SECONDS</span>
+                    </div>
+
+                </section>
+
+
+                <!-- FOOTER -->
+                <footer class="footer">
+                    <span>AGENT<span class="footer-accent">//</span>SENTINEL</span>
+                    <span>BEHAVIOURAL ANOMALY DETECTION FRAMEWORK</span>
+                    <span>VERSION 0.4.0</span>
+                </footer>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- CUSTOM FINE HAIRLINE CURSOR -->
+    <div class="fine-cursor" aria-hidden="true">
+        <span class="cursor-center"></span>
+    </div>
+
+
+    <!-- HAIRLINE INTERACTIVE ILLUSTRATION -->
+    <script type="module">
+        import { hub } from "@lucasmarkes/hairline";
+
+        const figure = hub(
+            document.getElementById("figure"),
+            {
+                intensity: 0.7,
+                theme: "dark",
+                label: "Interactive autonomous agent network"
+            }
+        );
+
+        window.addEventListener("beforeunload", () => {
+            figure.destroy();
+        });
+    </script>
+
+    <script type="module" src="/js/cursor.js"></script>
+    <script type="module" src="/js/dashboard.js"></script>
+
+</body>
+</html>
