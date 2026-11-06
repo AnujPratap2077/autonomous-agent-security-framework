@@ -1,7 +1,11 @@
+
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, Query
 
 from agent_security.events import AgentEvent
 from agent_security.collectors.monitor import EventMonitor
+from agent_security.database import EventDatabase
 from agent_security.detectors.rule_engine import RuleBasedDetector
 from agent_security.risk.assessor import RiskAssessor
 
@@ -16,7 +20,12 @@ app = FastAPI(
     version="0.4.0"
 )
 
-monitor = EventMonitor()
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DATABASE_PATH = PROJECT_ROOT / "data" / "agent_events.db"
+
+database = EventDatabase(database_path=DATABASE_PATH)
+monitor = EventMonitor(database=database)
+
 detector = RuleBasedDetector(max_requests=2)
 risk_assessor = RiskAssessor()
 
@@ -90,10 +99,8 @@ def analyze_agent(
             detail="No events found for the specified agent and session."
         )
 
-    # Layer 1: Existing rule-based detection.
     rule_anomalies = detector.detect(session_events)
 
-    # Layer 2: Historical behavioural analysis.
     baseline = baseline_manager.build_baseline(
         events=all_events,
         agent_id=agent_id,
@@ -113,29 +120,22 @@ def analyze_agent(
 
         baseline_status = "available"
 
-    # Combine both detection layers.
     all_anomalies = rule_anomalies + behavioural_anomalies
-
-    # Calculate overall risk.
     risk = risk_assessor.assess(all_anomalies)
 
     return {
         "agent_id": agent_id,
         "session_id": session_id,
         "total_events": len(session_events),
-
         "rule_based_anomalies": rule_anomalies,
         "behavioural_anomalies": behavioural_anomalies,
-
         "baseline_analysis": {
             "status": baseline_status,
             "sessions_used": (
-                baseline["sessions_used"]
-                if baseline is not None else 0
+                baseline["sessions_used"] if baseline is not None else 0
             ),
             "minimum_sessions_required": 5
         },
-
         "anomalies": all_anomalies,
         "risk_assessment": risk
     }

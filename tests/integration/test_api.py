@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from agent_security.api.main import app, monitor
+from agent_security.database import EventDatabase
 
 
 client = TestClient(app)
@@ -9,10 +10,15 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def clear_monitor():
-    """Keep API tests independent by clearing stored events."""
-    monitor.events.clear()
+    """Give each API test an isolated in-memory database."""
+    original_database = monitor.database
+    test_database = EventDatabase()
+
+    monitor.database = test_database
     yield
-    monitor.events.clear()
+
+    test_database.close()
+    monitor.database = original_database
 
 
 def create_event(
