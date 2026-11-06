@@ -86,5 +86,14 @@ class AgentSimulator:
                 status="failure",
                 duration_ms=25,
                 error_message="Unauthorized access"
+            ),
+            AgentEvent(
+                agent_id=self.agent_id,
+                session_id=self.session_id,
+                action="database_write",
+                tool_name="database_tool",
+                status="failure",
+                duration_ms=30,
+                error_message="Write operation failed"
             )
         ]

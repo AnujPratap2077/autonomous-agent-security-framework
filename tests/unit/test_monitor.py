@@ -35,9 +35,9 @@ def test_monitor_generates_correct_summary():
 
     summary = monitor.get_summary()
 
-    assert summary["total_events"] == 8
+    assert summary["total_events"] == 9
     assert summary["successful_events"] == 6
-    assert summary["failed_events"] == 1
+    assert summary["failed_events"] == 2
     assert summary["blocked_events"] == 1
 
 

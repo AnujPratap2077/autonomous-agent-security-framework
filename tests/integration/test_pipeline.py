@@ -40,9 +40,10 @@ def test_suspicious_agent_pipeline():
 
     anomaly_types = [anomaly["type"] for anomaly in anomalies]
 
-    assert len(collected_events) == 5
+    assert len(collected_events) == 6
     assert "excessive_requests" in anomaly_types
     assert "restricted_access" in anomaly_types
-    assert risk["risk_score"] == 80
+    assert "repeated_failures" in anomaly_types
+    assert risk["risk_score"] == 100
     assert risk["risk_level"] == "Critical"
-    assert risk["total_anomalies"] == 2
+    assert risk["total_anomalies"] == 3
