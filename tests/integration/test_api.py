@@ -1,20 +1,32 @@
+
 import pytest
 from fastapi.testclient import TestClient
 
+from agent_security.api import main as api_main
 from agent_security.api.main import app, monitor
 from agent_security.database import EventDatabase
 
 
-client = TestClient(app)
+TEST_API_KEY = "test-agent-sentinel-key"
+
+client = TestClient(
+    app,
+    headers={"X-API-Key": TEST_API_KEY}
+)
 
 
 @pytest.fixture(autouse=True)
-def clear_monitor():
-    """Give each API test an isolated in-memory database."""
-    original_database = monitor.database
-    test_database = EventDatabase()
+def clear_monitor(monkeypatch):
+    """Give each API test an isolated database and test API key."""
 
+    original_database = monitor.database
+
+    test_database = EventDatabase()
     monitor.database = test_database
+
+    # Use a predictable key during automated tests.
+    monkeypatch.setattr(api_main, "API_KEY", TEST_API_KEY)
+
     yield
 
     test_database.close()
@@ -37,12 +49,46 @@ def create_event(
     }
 
 
-def test_health_endpoint():
-    response = client.get("/health")
+# --------------------------------------------------
+# AUTHENTICATION TESTS
+# --------------------------------------------------
+
+def test_health_endpoint_is_public():
+    response = TestClient(app).get("/health")
 
     assert response.status_code == 200
     assert response.json()["status"] == "online"
 
+
+def test_protected_endpoint_rejects_missing_api_key():
+    unauthenticated_client = TestClient(app)
+
+    response = unauthenticated_client.get("/events")
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid or missing API key."
+
+
+def test_protected_endpoint_rejects_invalid_api_key():
+    unauthorized_client = TestClient(
+        app,
+        headers={"X-API-Key": "incorrect-key"}
+    )
+
+    response = unauthorized_client.get("/events")
+
+    assert response.status_code == 401
+
+
+def test_protected_endpoint_accepts_valid_api_key():
+    response = client.get("/events")
+
+    assert response.status_code == 200
+
+
+# --------------------------------------------------
+# EVENT API TESTS
+# --------------------------------------------------
 
 def test_receive_single_event():
     response = client.post(
@@ -95,6 +141,10 @@ def test_get_summary():
     assert data["failed_events"] == 1
     assert data["blocked_events"] == 1
 
+
+# --------------------------------------------------
+# ANOMALY ANALYSIS TESTS
+# --------------------------------------------------
 
 def test_analyze_suspicious_session():
     events = [
@@ -149,7 +199,6 @@ def test_behavioural_analysis_uses_historical_sessions():
 
     events = []
 
-    # Five historical sessions with one action each.
     for i in range(5):
         events.append(
             create_event(
@@ -159,7 +208,6 @@ def test_behavioural_analysis_uses_historical_sessions():
             )
         )
 
-    # Current session has five actions.
     for _ in range(5):
         events.append(
             create_event(
@@ -234,7 +282,6 @@ def test_rule_detection_works_without_historical_baseline():
 def test_other_agents_history_is_not_used():
     events = []
 
-    # Five sessions belonging to another agent.
     for i in range(5):
         events.append(
             create_event(
@@ -243,7 +290,6 @@ def test_other_agents_history_is_not_used():
             )
         )
 
-    # Current agent has only one session.
     events.append(
         create_event(
             agent_id="target-agent",
@@ -266,3 +312,21 @@ def test_other_agents_history_is_not_used():
     assert response.status_code == 200
     assert data["baseline_analysis"]["status"] == "unavailable"
     assert data["baseline_analysis"]["sessions_used"] == 0
+
+
+# --------------------------------------------------
+# BATCH SIZE PROTECTION TESTS
+# --------------------------------------------------
+
+def test_oversized_batch_rejected():
+    events = [
+        create_event()
+        for _ in range(1001)
+    ]
+
+    response = client.post("/events/batch", json=events)
+
+    assert response.status_code == 413
+    assert response.json()["detail"] == (
+        "Batch cannot contain more than 1000 events."
+    )
