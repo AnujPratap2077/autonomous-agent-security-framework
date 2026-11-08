@@ -1,4 +1,6 @@
 
+from uuid import uuid4
+
 from agent_security.client import AgentSecurityClient
 from agent_security.simulator import AgentSimulator
 
@@ -9,6 +11,12 @@ AGENT_ID = "external-agent-001"
 def main():
     client = AgentSecurityClient()
 
+    # Generate unique session IDs for every simulation run.
+    run_id = uuid4().hex[:8]
+
+    normal_session = f"normal-session-{run_id}"
+    suspicious_session = f"suspicious-session-{run_id}"
+
     print("\n======================================")
     print(" EXTERNAL AI AGENT SIMULATION")
     print("======================================")
@@ -17,8 +25,6 @@ def main():
     print("\nAPI Status:", health["status"])
 
     # Normal agent behaviour
-    normal_session = "normal-session-001"
-
     print("\n[1] Sending normal agent activities...")
 
     normal_simulator = AgentSimulator(
@@ -37,8 +43,6 @@ def main():
     print(normal_report["risk_assessment"])
 
     # Suspicious agent behaviour
-    suspicious_session = "suspicious-session-001"
-
     print("\n[2] Sending suspicious agent activities...")
 
     suspicious_simulator = AgentSimulator(
