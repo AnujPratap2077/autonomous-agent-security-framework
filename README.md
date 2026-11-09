@@ -2,20 +2,21 @@
 
 **AGENT//SENTINEL** is a lightweight security monitoring framework designed to detect suspicious and abnormal behaviour in autonomous AI agents.
 
-It collects agent activity events, analyzes them using rule-based detection and behavioural baselines, assigns risk scores, and presents monitoring results through a web dashboard.
+It collects agent activity events, analyzes them using rule-based detection and behavioural baselines, assigns risk scores, stores events persistently, and presents monitoring results through a web dashboard.
 
 ## 1. Project Overview
 
-Autonomous AI agents can perform actions such as API requests, database operations, and file access. Unexpected or malicious actions may create security risks.
+Autonomous AI agents can perform actions such as API requests, database operations, and file access. Unexpected or malicious actions can create security risks.
 
-This framework provides a centralized way to:
+AGENT//SENTINEL provides a centralized way to:
 
 - Monitor activities performed by autonomous agents.
 - Collect and validate agent activity events.
 - Detect suspicious behaviour using hybrid anomaly detection.
 - Calculate risk scores and classify security risks.
 - Store events persistently using SQLite.
-- Visualize monitoring and security results through a dashboard.
+- Protect API endpoints using API key authentication.
+- Visualize monitoring and security results through a web dashboard.
 
 ## 2. System Architecture
 
@@ -59,6 +60,7 @@ This framework provides a centralized way to:
 - Collects events from autonomous agents.
 - Tracks successful, failed, and blocked actions.
 - Supports individual and batch event submission.
+- Validates incoming event data.
 
 ### Hybrid Anomaly Detection
 
@@ -92,12 +94,20 @@ This framework provides a centralized way to:
 - Retains events across backend restarts.
 - Requires no external database server.
 
+### API Security
+
+- API key authentication for protected endpoints.
+- Request body size limit of 1 MB.
+- Batch submission limit of 1,000 events.
+- Input validation and field length restrictions.
+- API key is kept server-side and is not included in the frontend build.
+
 ### Security Dashboard
 
 - Displays event statistics.
 - Provides monitoring and anomaly information.
 - Shows risk assessment results.
-- Communicates with the backend API.
+- Communicates with the backend API through the configured Vite proxy.
 
 ## 4. Technology Stack
 
@@ -175,25 +185,35 @@ cd autonomous-agent-security-framework
 
 ### Step 2: Create a Python virtual environment
 
-```bash
+```powershell
 python -m venv .venv
 ```
 
 Activate it on Windows PowerShell:
 
 ```powershell
-.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 ```
 
 ### Step 3: Install Python dependencies
 
-```bash
+```powershell
 python -m pip install -r requirements.txt
 ```
 
-### Step 4: Install frontend dependencies
+### Step 4: Configure the API key
 
-```bash
+Generate a local API key and save it in the root `.env` file:
+
+```powershell
+python -c "from pathlib import Path; import secrets; Path('.env').write_text('AGENT_SENTINEL_API_KEY=' + secrets.token_urlsafe(32) + '\n', encoding='utf-8')"
+```
+
+The API key is generated locally. Do not commit the `.env` file or share its contents.
+
+### Step 5: Install frontend dependencies
+
+```powershell
 cd frontend
 npm install
 cd ..
@@ -274,6 +294,22 @@ Each simulation run generates unique session identifiers to prevent previous ses
 | GET    | `/summary`      | Returns event statistics          |
 | GET    | `/analyze`      | Analyzes agent behaviour and risk |
 
+### Authentication
+
+The `/health` endpoint is publicly accessible.
+
+The following endpoints require a valid API key:
+
+- `POST /events`
+- `POST /events/batch`
+- `GET /events`
+- `GET /summary`
+- `GET /analyze`
+
+Authenticated requests must include the `X-API-Key` HTTP header.
+
+The API key is loaded from the root `.env` file. The Python SDK and development proxy use this configuration to authenticate requests.
+
 Interactive API documentation is available at:
 
 `http://127.0.0.1:8000/docs`
@@ -283,12 +319,28 @@ Interactive API documentation is available at:
 Run the complete test suite from the project root:
 
 ```powershell
-python -m pytest
+$env:PYTHONPATH = "src"
+python -m pytest -q
 ```
 
-The project currently has **50 passing automated tests**, covering unit and integration functionality.
+**Latest verification: 54 tests passed.**
 
-## 11. Database
+The test suite covers unit and integration functionality.
+
+## 11. Frontend Production Build
+
+To verify that the frontend can be built for production, run:
+
+```powershell
+cd frontend
+npm run build
+```
+
+The generated production files are placed in the `frontend/dist/` directory.
+
+The development API key is injected through the Vite development proxy and is not included in the generated frontend bundle.
+
+## 12. Database
 
 The framework uses SQLite for persistent event storage.
 
@@ -302,27 +354,29 @@ The database is generated automatically when the backend initializes. It does no
 
 Database files are excluded from Git to avoid uploading local runtime data.
 
-## 12. Project Scope and Limitations
+## 13. Project Scope and Limitations
 
 This project is an academic security monitoring prototype.
 
 - Detection depends on configured rules and available behavioural history.
 - Behavioural baselines require sufficient historical sessions.
 - The included external agent is a simulation, not a production autonomous AI platform.
-- The framework demonstrates detection and monitoring; it does not guarantee prevention of every security threat.
-- Production deployment would require additional authentication, access controls, scalability, and security hardening.
+- The framework monitors and assesses suspicious behaviour; it does not independently terminate or contain external agents.
+- A `blocked` event represents an action reported as blocked by the agent, not an enforcement action performed by AGENT//SENTINEL.
+- Production deployment would require additional operational security, access management, monitoring, and scalability measures.
 
-## 13. Future Improvements
+## 14. Future Improvements
 
 - Integration with additional autonomous agent platforms.
 - More advanced behavioural analysis.
 - Real-time alert notifications.
-- Authentication and role-based access control.
-- Expanded security testing.
+- Role-based access control.
+- Expanded security testing and evaluation.
 
-## 14. Author and Repository
+## 15. Author and Repository
 
-**GitHub Repository:**  
+**GitHub Repository:**
+
 https://github.com/AnujPratap2077/autonomous-agent-security-framework
 
 ---
